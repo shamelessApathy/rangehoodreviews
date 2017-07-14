@@ -20,13 +20,13 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'admin_wp_rangehoodreviews');
+define('DB_NAME', 'rhr_live');
 
 /** MySQL database username */
-define('DB_USER', 'admin_dev');
+define('DB_USER', 'root');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'proline55');
+define('DB_PASSWORD', 'c88b856d09836b07d8a391a1bd83d326051754ba6aeb54bb');
 
 /** MySQL hostname */
 define('DB_HOST', 'localhost');

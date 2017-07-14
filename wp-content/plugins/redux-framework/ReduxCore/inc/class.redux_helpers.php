@@ -362,10 +362,12 @@
             }
 
             public static function makeBoolStr( $var ) {
-                if ( $var == false || $var == 'false' || $var == 0 || $var == '0' || $var == '' || empty( $var ) ) {
+                if ( $var === false || $var === 'false' || $var === 0 || $var === '0' || $var === '' || empty( $var ) ) {
                     return 'false';
-                } else {
+                } elseif ($var === true || $var === 'true' || $var === 1 || $var === '1') {
                     return 'true';
+                } else {
+                    return $var;
                 }
             }
 
@@ -699,6 +701,17 @@
                 }
 
                 return $ret;
+            }
+
+            public static function get_extension_dir( $dir ) {
+                return trailingslashit( wp_normalize_path( dirname( $dir ) ) );
+            }
+
+            public static function get_extension_url( $dir ) {
+                $ext_dir = Redux_Helpers::get_extension_dir( $dir );
+                $ext_url = str_replace( wp_normalize_path( WP_CONTENT_DIR ), WP_CONTENT_URL, $ext_dir );
+
+                return $ext_url;
             }
         }
     }

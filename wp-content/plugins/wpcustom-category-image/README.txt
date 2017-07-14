@@ -1,21 +1,21 @@
 === WPCustom Category Image ===
-Tags: wordpress, category, wordpress category image , custom category image
+Contributors: pyro3x 
+Tags: wordpress, category, customization, custom category image
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Requires at least: 3.5
 Tested up to: 4.5.2
-Stable tag: 2.1.5
+Stable tag: 2.1.11
 Donate link: https://goo.gl/puwy8c
 
 The WPCustom Category Image plugin allow users to upload their very own custom category image.
 
 == Description ==
 
-The **WP Custom Category Image** plugin allow users to upload their very own custom category (taxonomy) image to obtain a much more personalized look and feel.
+The **WP Custom Category Image** plugin allow users to upload their very own custom category image to obtain a much more personalized look and feel.
 
 **Requires WordPress 3.0+ and PHP 5.3+**
 
-Questions? Suggestions? ....? [twitter.com/eduardostuart](https://twitter.com/eduardostuart)
 
 = Usage =
 
@@ -59,6 +59,10 @@ you are using a PHP 5.3 < Version.
 3. Choose Category Image
 
 == Changelog ==
+
+1. v2.1.2
+
+- Readme Updated
 
 1. v2.1.1
 

@@ -7,34 +7,47 @@ if (! defined('ABSPATH')) {
 class WPCustomCategoryImage
 {
 
-
     protected $taxonomies;
+
+    public static $instance = null;
+
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     public static function activate()
     {
+        // NO GOD! PLEASE NO!!! NOOOOOOOOOO
         if (WPCCI_WP_VERSION < WPCCI_WP_MIN_VERSION || version_compare(PHP_VERSION, WPCCI_MIN_PHP_VERSION, '<')) {
-            // NO GOD! PLEASE NO!!! NOOOOOOOOOO
-            $message = '<a href="http://www.youtube.com/watch?v=umDr0mPuyQc" target="_blank">';
-            $message.= __('Sorry, WPCustom Category Image works only under Wordpress 3.5 or higher', WPCCI_TXT_DOMAIN);
-            $message.= '<br>';
-            $message.= __('And... PHP ', WPCCI_TXT_DOMAIN) . WPCCI_MIN_PHP_VERSION;
-            $message.= '</a>';
-
-            wpcci_error($message, E_USER_ERROR);
+            wpcci_error(___template('old-version-alert', array(
+                'min_php_version' => WPCCI_MIN_PHP_VERSION
+            ), false), E_USER_ERROR);
         }
     }
 
-    // initialize wp custom category image
+    public static function deactivate()
+    {
+        delete_option('wpcustom_notice', 0);
+    }
+
+
     public static function initialize()
     {
-        $instance = new self();
+        $instance = self::getInstance();
 
+        // Shortcode
         add_shortcode('wp_custom_image_category', array($instance, 'shortcode'));
 
-        add_action('admin_init', array($instance, 'admin_init'));
-        add_action('admin_enqueue_scripts', array($instance, 'admin_enqueue_assets'));
-        add_action('edit_term', array($instance, 'save_image'));
-        add_action('create_term', array($instance, 'save_image'));
+        // Actions
+        add_action('admin_init',                  array($instance, 'admin_init'));
+        add_action('admin_enqueue_scripts',       array($instance, 'admin_enqueue_assets'));
+        add_action('edit_term',                   array($instance, 'save_image'));
+        add_action('create_term',                 array($instance, 'save_image'));
+        add_action('admin_notices',               array($instance, 'show_admin_notice'));
     }
 
     public static function shortcode($atts)
@@ -56,21 +69,17 @@ class WPCustomCategoryImage
     public static function get_category_image($atts = array(), $onlysrc = false)
     {
         $params = array_merge(array(
-                'size'    => 'full',
-                'term_id' => null,
-                'alt'     => null
+            'size'    => 'full',
+            'term_id' => null,
+            'alt'     => null
         ), $atts);
 
         $term_id = $params['term_id'];
         $size    = $params['size'];
 
-        if (! $term_id) {
-            if (is_category()) {
-                $term_id = get_query_var('cat');
-            } elseif (is_tax()) {
-                $current_term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy'));
-                $term_id = $current_term->term_id;
-            }
+        if (!$term_id) {
+            $term    = get_queried_object();
+            $term_id = $term->term_id;
         }
 
         if (!$term_id) {
@@ -86,7 +95,7 @@ class WPCustomCategoryImage
             'alt'=> (is_null($params['alt']) ?  $attachment_alt : $params['alt'])
         );
 
-        if ($onlysrc == true) {
+        if ($onlysrc) {
             $src = wp_get_attachment_image_src($attachment_id, $size, false);
             return is_array($src) ? $src[0] : null;
         }
@@ -94,10 +103,20 @@ class WPCustomCategoryImage
         return wp_get_attachment_image($attachment_id, $size, false, $attr);
     }
 
+    public function show_admin_notice()
+    {
+        if (get_option('wpcustom_notice', false)  !== false) {
+            return;
+        }
+
+        update_option('wpcustom_notice', 1);
+
+        ___template('admin-notice');
+    }
+
     public function manage_category_columns($columns)
     {
-        $columns['image'] = __('Image', WPCCI_TXT_DOMAIN);
-        return $columns;
+        return array_merge($columns, array('image' => __('Image', 'wpcustom-category-image')));
     }
 
     public function manage_category_columns_fields($deprecated, $column_name, $term_id)
@@ -143,34 +162,32 @@ class WPCustomCategoryImage
 
         wp_enqueue_media();
 
-        wp_enqueue_script(
-            'category-image-js',
-            plugins_url('/js/categoryimage.js', __FILE__),
-            array('jquery'),
-            '1.0.0',
-            true
-        );
+        wp_enqueue_script('category-image-js', $this->asset_url('/js/categoryimage.js'), array('jquery'), '1.0.0', true );
 
-        wp_localize_script(
-            'category-image-js',
-            'CategoryImage',
-            array(
-                'wp_version' => WPCCI_WP_VERSION,
+        wp_localize_script('category-image-js', 'CategoryImage', array(
+            'wp_version' => WPCCI_WP_VERSION,
                 'label'      => array(
-                    'title'  => __('Choose Category Image', WPCCI_TXT_DOMAIN),
-                    'button' => __('Choose Image', WPCCI_TXT_DOMAIN)
+                    'title'  => __('Choose Category Image', 'wpcustom-category-image'),
+                    'button' => __('Choose Image', 'wpcustom-category-image')
                 )
             )
         );
 
-        wp_enqueue_style(
-            'category-image-css',
-            plugins_url('/css/categoryimage.css', __FILE__)
-        );
+        wp_enqueue_style('category-image-css', $this->asset_url('/css/categoryimage.css'));
+    }
+
+    private function asset_url($file)
+    {
+        return plugins_url($file, __FILE__);
     }
 
     public function save_image($term_id)
     {
+        // Ignore quick edit
+        if (isset($_POST['action']) && $_POST['action'] == 'inline-save-tax') {
+            return;
+        }
+
         $attachment_id = isset($_POST['categoryimage_attachment']) ? (int) $_POST['categoryimage_attachment'] : null;
 
         if (! is_null($attachment_id) && $attachment_id > 0 && !empty($attachment_id)) {
@@ -205,9 +222,9 @@ class WPCustomCategoryImage
     {
         $params = array(
             'label'  => array(
-                'image'        => __('Image', WPCCI_TXT_DOMAIN),
-                'upload_image' => __('Upload/Edit Image', WPCCI_TXT_DOMAIN),
-                'remove_image' => __('Remove image', WPCCI_TXT_DOMAIN)
+                'image'        => __('Image', 'wpcustom-category-image'),
+                'upload_image' => __('Upload/Edit Image', 'wpcustom-category-image'),
+                'remove_image' => __('Remove image', 'wpcustom-category-image')
             ),
             'categoryimage_attachment' => null
         );

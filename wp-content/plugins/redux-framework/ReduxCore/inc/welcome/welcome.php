@@ -84,9 +84,11 @@
                 $redirect = false;
                 if ( empty( $saveVer ) ) {
                     $redirect = true; // First time
-                } else if ( version_compare( $curVer, $saveVer, '>' ) ) {
-                    $redirect = true; // Previous version
                 }
+                // Removing redirect except for the first time with the plugin installed. :)  Less annoying until we actually use this page.
+                //else if ( version_compare( $curVer, $saveVer, '>' ) ) {
+                //    $redirect = true; // Previous version
+                //}
                 if ( $redirect && ! defined( 'WP_TESTS_DOMAIN' ) && ReduxFramework::$_as_plugin ) {
                     add_action( 'init', array( $this, 'do_redirect' ) );
                 }
@@ -119,6 +121,7 @@
             if ( $newHash == $data['check'] ) {
                 unset( $generate_hash );
             }
+
             $post_data = array(
                 'hash'          => md5( network_site_url() . '-' . $_SERVER['REMOTE_ADDR'] ),
                 'site'          => esc_url( home_url( '/' ) ),
@@ -129,6 +132,7 @@
             $post_data = serialize( $post_data );
 
             if ( isset( $generate_hash ) && $generate_hash ) {
+                
                 $data['check']      = $newHash;
                 $data['identifier'] = "";
                 $response           = wp_remote_post( 'http://support.redux.io/v1/', array(
@@ -301,24 +305,24 @@
                 type='text/css' media='all'/>
             <style type="text/css">
                 .redux-badge:before {
-                <?php echo esc_js(is_rtl() ? 'right' : 'left'); ?> : 0;
+                <?php echo is_rtl() ? 'right' : 'left'; ?> : 0;
                 }
 
                 .about-wrap .redux-badge {
-                <?php echo esc_js(is_rtl() ? 'left' : 'right'); ?> : 0;
+                <?php echo is_rtl() ? 'left' : 'right'; ?> : 0;
                 }
 
                 .about-wrap .feature-rest div {
-                    padding- <?php echo esc_js(is_rtl() ? 'left' : 'right'); ?>: 100px;
+                    padding- <?php echo is_rtl() ? 'left' : 'right'; ?>: 100px;
                 }
 
                 .about-wrap .feature-rest div.last-feature {
-                    padding- <?php echo esc_js(is_rtl() ? 'right' : 'left'); ?>: 100px;
-                    padding- <?php echo esc_js(is_rtl() ? 'left' : 'right'); ?>: 0;
+                    padding- <?php echo is_rtl() ? 'right' : 'left'; ?>: 100px;
+                    padding- <?php echo is_rtl() ? 'left' : 'right'; ?>: 0;
                 }
 
                 .about-wrap .feature-rest div.icon:before {
-                    margin: <?php echo esc_js(is_rtl() ? '0 -100px 0 0' : '0 0 0 -100px'); ?>;
+                    margin: <?php echo is_rtl() ? '0 -100px 0 0' : '0 0 0 -100px'; ?>;
                 }
             </style>
             <?php
@@ -332,7 +336,7 @@
          * @return void
          */
         public function tabs() {
-            $selected = isset ( $_GET['page'] ) ? $_GET['page'] : 'redux-about';
+            $selected = isset ( $_GET['page'] ) ? esc_attr( $_GET['page'] ) : 'redux-about';
             $nonce    = wp_create_nonce( 'redux-support-hash' );
             ?>
             <input type="hidden" id="redux_support_nonce" value="<?php echo esc_attr( $nonce ); ?>"/>

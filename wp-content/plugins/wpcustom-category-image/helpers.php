@@ -59,6 +59,14 @@ if (!function_exists('category_image_src')) {
     }
 }
 
+if (!function_exists('wpci_instance'))
+{
+    function wpci_instance()
+    {
+        return WPCustomCategoryImage::getInstance();
+    }
+}
+
 if (!function_exists('wpcci_error')) {
     function wpcci_error($message, $errno)
     {
