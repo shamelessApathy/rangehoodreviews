@@ -11,3 +11,5 @@
 {"user_id":91,"user_login":"Sarah","user_remoteaddr":"73.98.130.2","user_hostname":"c-73-98-130-2.hsd1.ut.comcast.net","user_lastlogin":"2017-07-14 16:03:05"}
 {"user_id":1,"user_login":"dev","user_remoteaddr":"73.98.130.2","user_hostname":"c-73-98-130-2.hsd1.ut.comcast.net","user_lastlogin":"2017-07-14 16:04:17"}
 {"user_id":91,"user_login":"Sarah","user_remoteaddr":"73.98.130.2","user_hostname":"c-73-98-130-2.hsd1.ut.comcast.net","user_lastlogin":"2017-07-14 16:10:33"}
+{"user_id":91,"user_login":"Sarah","user_remoteaddr":"73.98.130.2","user_hostname":"c-73-98-130-2.hsd1.ut.comcast.net","user_lastlogin":"2017-07-17 15:18:31"}
+{"user_id":1,"user_login":"dev","user_remoteaddr":"73.98.130.2","user_hostname":"c-73-98-130-2.hsd1.ut.comcast.net","user_lastlogin":"2017-07-17 19:37:02"}

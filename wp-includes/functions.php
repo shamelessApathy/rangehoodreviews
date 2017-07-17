@@ -40,7 +40,10 @@ function mysql2date( $format, $date, $translate = true ) {
 	else
 		return date( $format, $i );
 }
-
+function custom_excerpt_length( $length ) {
+        return 20;
+    }
+    add_filter( 'excerpt_length', 'custom_excerpt_length', 999 );
 /**
  * Retrieve the current time based on specified type.
  *
