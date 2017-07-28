@@ -8,6 +8,7 @@ the_post();
 ?>
 <section>
 	<div class="container">
+	
 		<?php
 		$review_category = isset( $_GET['review-category'] ) ? $_GET['review-category'] : '';
 		if( empty( $review_category ) ){

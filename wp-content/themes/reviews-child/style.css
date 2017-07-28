@@ -12,6 +12,32 @@
  Text Domain:  reviews-child
 */
 /* Brian Theme Additions */
+.blog-post-container
+{
+	width:400px;
+	height:550px;
+	border:1px solid black;
+	float:left;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:30px;
+
+}
+.blog-post-title
+{
+	margin-top:20px;
+	font-size:22px;
+	text-align:center;
+}
+.blog-post-excerpt
+{
+	margin-top:25px;
+	text-align:center;
+}
+.blog-post-image img
+{
+	max-width:100%;
+}
 .brand-name
 {
 	float:left;
