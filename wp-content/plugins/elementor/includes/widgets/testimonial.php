@@ -1,26 +1,68 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Testimonial Widget
+ */
 class Widget_Testimonial extends Widget_Base {
 
+	/**
+	 * Retrieve testimonial widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'testimonial';
 	}
 
+	/**
+	 * Retrieve testimonial widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Testimonial', 'elementor' );
 	}
 
+	/**
+	 * Retrieve testimonial widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-testimonial';
 	}
 
+	/**
+	 * Retrieve the list of categories the testimonial widget belongs to.
+	 *
+	 * Used to determine where to display the widget in the editor.
+	 *
+	 * @access public
+	 *
+	 * @return array Widget categories.
+	 */
 	public function get_categories() {
 		return [ 'general-elements' ];
 	}
 
+	/**
+	 * Register testimonial widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_testimonial',
@@ -119,7 +161,7 @@ class Widget_Testimonial extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// Content
+		// Content.
 		$this->start_controls_section(
 			'section_style_testimonial_content',
 			[
@@ -156,7 +198,7 @@ class Widget_Testimonial extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// Image
+		// Image.
 		$this->start_controls_section(
 			'section_style_testimonial_image',
 			[
@@ -183,9 +225,6 @@ class Widget_Testimonial extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .elementor-testimonial-wrapper .elementor-testimonial-image img' => 'width: {{SIZE}}{{UNIT}};height: {{SIZE}}{{UNIT}};',
 				],
-				'condition' => [
-					'testimonial_image[url]!' => '',
-				],
 			]
 		);
 
@@ -194,9 +233,6 @@ class Widget_Testimonial extends Widget_Base {
 			[
 				'name' => 'image_border',
 				'selector' => '{{WRAPPER}} .elementor-testimonial-wrapper .elementor-testimonial-image img',
-				'condition' => [
-					'testimonial_image[url]!' => '',
-				],
 				'separator' => 'before',
 			]
 		);
@@ -210,15 +246,12 @@ class Widget_Testimonial extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .elementor-testimonial-wrapper .elementor-testimonial-image img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
-				'condition' => [
-					'testimonial_image[url]!' => '',
-				],
 			]
 		);
 
 		$this->end_controls_section();
 
-		// Name
+		// Name.
 		$this->start_controls_section(
 			'section_style_testimonial_name',
 			[
@@ -255,7 +288,7 @@ class Widget_Testimonial extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// Job
+		// Job.
 		$this->start_controls_section(
 			'section_style_testimonial_job',
 			[
@@ -293,6 +326,13 @@ class Widget_Testimonial extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render testimonial widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$settings = $this->get_settings();
 
@@ -357,6 +397,13 @@ class Widget_Testimonial extends Widget_Base {
 	<?php
 	}
 
+	/**
+	 * Render testimonial widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
 		<#
@@ -375,7 +422,7 @@ class Widget_Testimonial extends Widget_Base {
 				<div class="elementor-testimonial-content">
 					{{{ settings.testimonial_content }}}
 				</div>
-		    <# } #>
+			<# } #>
 
 			<div class="elementor-testimonial-meta{{ hasImage }}{{ testimonial_image_position }}">
 				<div class="elementor-testimonial-meta-inner">

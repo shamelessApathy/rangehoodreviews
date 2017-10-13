@@ -1,26 +1,68 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Tabs Widget
+ */
 class Widget_Tabs extends Widget_Base {
 
+	/**
+	 * Retrieve tabs widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'tabs';
 	}
 
+	/**
+	 * Retrieve tabs widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Tabs', 'elementor' );
 	}
 
+	/**
+	 * Retrieve tabs widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-tabs';
 	}
 
+	/**
+	 * Retrieve the list of categories the tabs widget belongs to.
+	 *
+	 * Used to determine where to display the widget in the editor.
+	 *
+	 * @access public
+	 *
+	 * @return array Widget categories.
+	 */
 	public function get_categories() {
 		return [ 'general-elements' ];
 	}
 
+	/**
+	 * Register tabs widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_tabs',
@@ -249,34 +291,48 @@ class Widget_Tabs extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render tabs widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$tabs = $this->get_settings( 'tabs' );
 		?>
 		<div class="elementor-tabs" role="tablist">
-			<?php
-			$counter = 1; ?>
+			<?php $counter = 1; ?>
 			<div class="elementor-tabs-wrapper" role="tab">
 				<?php foreach ( $tabs as $item ) : ?>
 					<div class="elementor-tab-title elementor-tab-desktop-title" data-tab="<?php echo $counter; ?>"><?php echo $item['tab_title']; ?></div>
 				<?php
 					$counter++;
-				endforeach; ?>
+				endforeach;
+				?>
 			</div>
 
-			<?php
-			$counter = 1; ?>
+			<?php $counter = 1; ?>
 			<div class="elementor-tabs-content-wrapper" role="tabpanel">
 				<?php foreach ( $tabs as $item ) : ?>
 					<div class="elementor-tab-title elementor-tab-mobile-title" data-tab="<?php echo $counter; ?>"><?php echo $item['tab_title']; ?></div>
 					<div class="elementor-tab-content elementor-clearfix" data-tab="<?php echo $counter; ?>"><?php echo $this->parse_text_editor( $item['tab_content'] ); ?></div>
 				<?php
 					$counter++;
-				endforeach; ?>
+				endforeach;
+				?>
 			</div>
 		</div>
 		<?php
 	}
 
+	/**
+	 * Render tabs widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
 		<div class="elementor-tabs" data-active-tab="{{ editSettings.activeItemIndex ? editSettings.activeItemIndex : 0 }}" role="tablist">

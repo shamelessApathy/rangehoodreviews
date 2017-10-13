@@ -1,22 +1,55 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Text Editor Widget
+ */
 class Widget_Text_Editor extends Widget_Base {
 
+	/**
+	 * Retrieve text editor widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'text-editor';
 	}
 
+	/**
+	 * Retrieve text editor widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Text Editor', 'elementor' );
 	}
 
+	/**
+	 * Retrieve text editor widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-align-left';
 	}
 
+	/**
+	 * Register text editor widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_editor',
@@ -84,21 +117,21 @@ class Widget_Text_Editor extends Widget_Base {
 			]
 		);
 
-	    $this->add_control(
-	        'text_color',
-	        [
-	            'label' => __( 'Text Color', 'elementor' ),
-	            'type' => Controls_Manager::COLOR,
-	            'default' => '',
-	            'selectors' => [
-	                '{{WRAPPER}}' => 'color: {{VALUE}};',
-	            ],
-	            'scheme' => [
-		            'type' => Scheme_Color::get_type(),
-		            'value' => Scheme_Color::COLOR_3,
-	            ],
-	        ]
-	    );
+		$this->add_control(
+			'text_color',
+			[
+				'label' => __( 'Text Color', 'elementor' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '',
+				'selectors' => [
+					'{{WRAPPER}}' => 'color: {{VALUE}};',
+				],
+				'scheme' => [
+					'type' => Scheme_Color::get_type(),
+					'value' => Scheme_Color::COLOR_3,
+				],
+			]
+		);
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
@@ -265,6 +298,13 @@ class Widget_Text_Editor extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render text editor widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$editor_content = $this->get_settings( 'editor' );
 
@@ -274,11 +314,25 @@ class Widget_Text_Editor extends Widget_Base {
 		<?php
 	}
 
+	/**
+	 * Render text editor widget as plain content.
+	 *
+	 * Override the default behavior by printing the content without rendering it.
+	 *
+	 * @access public
+	 */
 	public function render_plain_content() {
 		// In plain mode, render without shortcode
 		echo $this->get_settings( 'editor' );
 	}
 
+	/**
+	 * Render text editor widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
 		<div class="elementor-text-editor elementor-clearfix">{{{ settings.editor }}}</div>

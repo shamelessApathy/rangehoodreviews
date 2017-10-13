@@ -1,30 +1,81 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Image Carousel Widget
+ */
 class Widget_Image_Carousel extends Widget_Base {
 
+	/**
+	 * Retrieve image carousel widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'image-carousel';
 	}
 
+	/**
+	 * Retrieve image carousel widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Image Carousel', 'elementor' );
 	}
 
+	/**
+	 * Retrieve image carousel widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-slider-push';
 	}
 
+	/**
+	 * Retrieve the list of categories the image carousel widget belongs to.
+	 *
+	 * Used to determine where to display the widget in the editor.
+	 *
+	 * @access public
+	 *
+	 * @return array Widget categories.
+	 */
 	public function get_categories() {
 		return [ 'general-elements' ];
 	}
 
+	/**
+	 * Retrieve the list of scripts the image carousel widget depended on.
+	 *
+	 * Used to set scripts dependencies required to run the widget.
+	 *
+	 * @access public
+	 *
+	 * @return array Widget scripts dependencies.
+	 */
 	public function get_script_depends() {
 		return [ 'jquery-slick' ];
 	}
 
+	/**
+	 * Register image carousel widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_image_carousel',
@@ -58,7 +109,9 @@ class Widget_Image_Carousel extends Widget_Base {
 			[
 				'label' => __( 'Slides to Show', 'elementor' ),
 				'type' => Controls_Manager::SELECT,
-				'options' => [ '' => __( 'Default', 'elementor' ) ] + $slides_to_show,
+				'options' => [
+					'' => __( 'Default', 'elementor' ),
+				] + $slides_to_show,
 				'frontend_available' => true,
 			]
 		);
@@ -130,6 +183,23 @@ class Widget_Image_Carousel extends Widget_Base {
 					'link_to' => 'custom',
 				],
 				'show_label' => false,
+			]
+		);
+
+		$this->add_control(
+			'open_lightbox',
+			[
+				'label' => __( 'Lightbox', 'elementor' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'default',
+				'options' => [
+					'default' => __( 'Default', 'elementor' ),
+					'yes' => __( 'Yes', 'elementor' ),
+					'no' => __( 'No', 'elementor' ),
+				],
+				'condition' => [
+					'link_to' => 'file',
+				],
 			]
 		);
 
@@ -537,11 +607,19 @@ class Widget_Image_Carousel extends Widget_Base {
 
 	}
 
+	/**
+	 * Render image carousel widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$settings = $this->get_settings();
 
-		if ( empty( $settings['carousel'] ) )
+		if ( empty( $settings['carousel'] ) ) {
 			return;
+		}
 
 		$slides = [];
 
@@ -555,7 +633,13 @@ class Widget_Image_Carousel extends Widget_Base {
 			if ( $link ) {
 				$link_key = 'link_' . $index;
 
-				$this->add_render_attribute( $link_key, 'href', $link );
+				$this->add_render_attribute( $link_key, [
+					'href' => $link['url'],
+					'class' => 'elementor-clickable',
+					'data-elementor-open-lightbox' => $settings['open_lightbox'],
+					'data-elementor-lightbox-slideshow' => $this->get_id(),
+					'data-elementor-lightbox-index' => $index,
+				] );
 
 				if ( ! empty( $link['is_external'] ) ) {
 					$this->add_render_attribute( $link_key, 'target', '_blank' );
@@ -611,6 +695,16 @@ class Widget_Image_Carousel extends Widget_Base {
 		<?php
 	}
 
+	/**
+	 * Retrieve image carousel link URL.
+	 *
+	 * @access private
+	 *
+	 * @param array $attachment
+	 * @param object $instance
+	 *
+	 * @return array|string|false An array/string containing the attachment URL, or false if no link.
+	 */
 	private function get_link_url( $attachment, $instance ) {
 		if ( 'none' === $instance['link_to'] ) {
 			return false;
@@ -620,6 +714,7 @@ class Widget_Image_Carousel extends Widget_Base {
 			if ( empty( $instance['link']['url'] ) ) {
 				return false;
 			}
+
 			return $instance['link'];
 		}
 
@@ -628,6 +723,15 @@ class Widget_Image_Carousel extends Widget_Base {
 		];
 	}
 
+	/**
+	 * Retrieve image carousel caption.
+	 *
+	 * @access private
+	 *
+	 * @param array $attachment
+	 *
+	 * @return string The caption of the image.
+	 */
 	private function get_image_caption( $attachment ) {
 		$caption_type = $this->get_settings( 'caption_type' );
 

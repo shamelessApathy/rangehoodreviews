@@ -1,22 +1,55 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Google Maps Widget
+ */
 class Widget_Google_Maps extends Widget_Base {
 
+	/**
+	 * Retrieve google maps widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'google_maps';
 	}
 
+	/**
+	 * Retrieve google maps widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Google Maps', 'elementor' );
 	}
 
+	/**
+	 * Retrieve google maps widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-google-maps';
 	}
 
+	/**
+	 * Register google maps widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_map',
@@ -80,8 +113,6 @@ class Widget_Google_Maps extends Widget_Base {
 				'label' => __( 'Prevent Scroll', 'elementor' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
-				'label_on' => __( 'Yes', 'elementor' ),
-				'label_off' => __( 'No', 'elementor' ),
 				'selectors' => [
 					'{{WRAPPER}} iframe' => 'pointer-events: none;',
 				],
@@ -100,14 +131,23 @@ class Widget_Google_Maps extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render google maps widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$settings = $this->get_settings();
 
-		if ( empty( $settings['address'] ) )
+		if ( empty( $settings['address'] ) ) {
 			return;
+		}
 
-		if ( 0 === absint( $settings['zoom']['size'] ) )
+		if ( 0 === absint( $settings['zoom']['size'] ) ) {
 			$settings['zoom']['size'] = 10;
+		}
 
 		printf(
 			'<div class="elementor-custom-embed"><iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=%s&amp;t=m&amp;z=%d&amp;output=embed&amp;iwloc=near"></iframe></div>',
@@ -116,5 +156,12 @@ class Widget_Google_Maps extends Widget_Base {
 		);
 	}
 
+	/**
+	 * Render google maps widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @access protected
+	 */
 	protected function _content_template() {}
 }

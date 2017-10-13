@@ -1,7 +1,9 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 class Upgrades {
 
@@ -12,7 +14,7 @@ class Upgrades {
 	public static function init() {
 		$elementor_version = get_option( 'elementor_version' );
 
-		// Normal init
+		// Normal init.
 		if ( ELEMENTOR_VERSION === $elementor_version ) {
 			return;
 		}
@@ -25,7 +27,7 @@ class Upgrades {
 	}
 
 	private static function check_upgrades( $elementor_version ) {
-		// It's a new install
+		// It's a new install.
 		if ( ! $elementor_version ) {
 			return;
 		}
@@ -51,17 +53,14 @@ class Upgrades {
 		global $wpdb;
 
 		$post_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				'SELECT `post_id` FROM %1$s
-						WHERE `meta_key` = \'_elementor_version\'
-							AND `meta_value` = \'%2$s\';',
-				$wpdb->postmeta,
-				'0.1'
-			)
+			'SELECT `post_id` FROM `' . $wpdb->postmeta . '`
+					WHERE `meta_key` = \'_elementor_version\'
+						AND `meta_value` = \'0.1\';'
 		);
 
-		if ( empty( $post_ids ) )
+		if ( empty( $post_ids ) ) {
 			return;
+		}
 
 		foreach ( $post_ids as $post_id ) {
 			$data = Plugin::$instance->db->get_plain_editor( $post_id );
@@ -88,19 +87,16 @@ class Upgrades {
 	private static function _upgrade_v092() {
 		global $wpdb;
 
-		// Fix Icon/Icon Box Widgets padding
+		// Fix Icon/Icon Box Widgets padding.
 		$post_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				'SELECT `post_id` FROM %1$s
-						WHERE `meta_key` = \'_elementor_version\'
-							AND `meta_value` = \'%2$s\';',
-				$wpdb->postmeta,
-				'0.2'
-			)
+			'SELECT `post_id` FROM `' . $wpdb->postmeta . '`
+					WHERE `meta_key` = \'_elementor_version\'
+						AND `meta_value` = \'0.2\';'
 		);
 
-		if ( empty( $post_ids ) )
+		if ( empty( $post_ids ) ) {
 			return;
+		}
 
 		foreach ( $post_ids as $post_id ) {
 			$data = Plugin::$instance->db->get_plain_editor( $post_id );
@@ -135,19 +131,16 @@ class Upgrades {
 	private static function _upgrade_v0110() {
 		global $wpdb;
 
-		// Fix Button widget to new sizes options
+		// Fix Button widget to new sizes options.
 		$post_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				'SELECT `post_id` FROM %1$s
-						WHERE `meta_key` = \'_elementor_version\'
-							AND `meta_value` = \'%2$s\';',
-				$wpdb->postmeta,
-				'0.3'
-			)
+			'SELECT `post_id` FROM `' . $wpdb->postmeta . '`
+					WHERE `meta_key` = \'_elementor_version\'
+						AND `meta_value` = \'0.3\';'
 		);
 
-		if ( empty( $post_ids ) )
+		if ( empty( $post_ids ) ) {
 			return;
+		}
 
 		foreach ( $post_ids as $post_id ) {
 			$data = Plugin::$instance->db->get_plain_editor( $post_id );

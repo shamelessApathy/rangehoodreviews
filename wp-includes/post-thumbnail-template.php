@@ -36,15 +36,7 @@ function get_post_thumbnail_id( $post = null ) {
 	if ( ! $post ) {
 		return '';
 	}
-	$test = get_post_meta( $post->ID, '_thumbnail_id', true );
-	if (!empty($test))
-	{
-		return $test;
-	}
-	else
-	{
-		return null;
-	}
+	return get_post_meta( $post->ID, '_thumbnail_id', true );
 }
 
 /**

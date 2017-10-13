@@ -1,7 +1,9 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 class Api {
 
@@ -56,8 +58,9 @@ class Api {
 
 	public static function get_upgrade_notice() {
 		$data = self::_get_info_data();
-		if ( empty( $data['upgrade_notice'] ) )
+		if ( empty( $data['upgrade_notice'] ) ) {
 			return false;
+		}
 
 		return $data['upgrade_notice'];
 	}
@@ -66,8 +69,9 @@ class Api {
 		self::_get_info_data();
 
 		$templates = get_option( 'elementor_remote_info_templates_data' );
-		if ( empty( $templates ) )
+		if ( empty( $templates ) ) {
 			return [];
+		}
 
 		return $templates;
 	}
@@ -76,9 +80,9 @@ class Api {
 		$url = sprintf( self::$api_get_template_content_url, $template_id );
 
 		$body_args = [
-			// Which API version is used
+			// Which API version is used.
 			'api_version' => ELEMENTOR_VERSION,
-			// Which language to return
+			// Which language to return.
 			'site_lang' => get_bloginfo( 'language' ),
 		];
 
@@ -124,7 +128,7 @@ class Api {
 		] );
 	}
 
-	public function ajax_reset_api_data() {
+	public static function ajax_reset_api_data() {
 		check_ajax_referer( 'elementor_reset_library', '_nonce' );
 
 		self::_get_info_data( true );
@@ -136,5 +140,3 @@ class Api {
 		add_action( 'wp_ajax_elementor_reset_library', [ __CLASS__, 'ajax_reset_api_data' ] );
 	}
 }
-
-Api::init();

@@ -12,16 +12,16 @@ class Import_Images {
 	private function _return_saved_image( $attachment ) {
 		global $wpdb;
 
-		if ( isset( $this->_replace_image_ids[ $attachment['id'] ] ) )
+		if ( isset( $this->_replace_image_ids[ $attachment['id'] ] ) ) {
 			return $this->_replace_image_ids[ $attachment['id'] ];
+		}
 
 		$post_id = $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT `post_id` FROM %1$s
+				'SELECT `post_id` FROM `' . $wpdb->postmeta . '`
 					WHERE `meta_key` = \'_elementor_source_image_hash\'
-						AND `meta_value` = \'%2$s\'
+						AND `meta_value` = %s
 				;',
-				$wpdb->postmeta,
 				$this->_get_hash_image( $attachment['url'] )
 			)
 		);
@@ -41,8 +41,9 @@ class Import_Images {
 
 	public function import( $attachment ) {
 		$saved_image = $this->_return_saved_image( $attachment );
-		if ( $saved_image )
+		if ( $saved_image ) {
 			return $saved_image;
+		}
 
 		// Extract the file name and extension from the url
 		$filename = basename( $attachment['url'] );
@@ -50,7 +51,7 @@ class Import_Images {
 		if ( function_exists( 'file_get_contents' ) ) {
 			$options = [
 				'http' => [
-						'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686 on x86_64; rv:49.0) Gecko/20100101 Firefox/49.0',
+					'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686 on x86_64; rv:49.0) Gecko/20100101 Firefox/49.0',
 				],
 			];
 
@@ -82,7 +83,7 @@ class Import_Images {
 		} else {
 			// For now just return the origin attachment
 			return $attachment;
-			//return new \WP_Error( 'attachment_processing_error', __( 'Invalid file type', 'elementor' ) );
+			// return new \WP_Error( 'attachment_processing_error', __( 'Invalid file type', 'elementor' ) );
 		}
 
 		$post_id = wp_insert_attachment( $post, $upload['file'] );
@@ -101,8 +102,9 @@ class Import_Images {
 	}
 
 	public function __construct() {
-		if ( ! function_exists( 'WP_Filesystem' ) )
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 
 		WP_Filesystem();
 	}

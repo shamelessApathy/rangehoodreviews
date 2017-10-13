@@ -3,7 +3,7 @@
  * Plugin Name: Display Posts Shortcode
  * Plugin URI: http://www.billerickson.net/shortcode-to-display-posts/
  * Description: Display a listing of posts using the [display-posts] shortcode
- * Version: 2.8.0
+ * Version: 2.9.0
  * Author: Bill Erickson
  * Author URI: http://www.billerickson.net
  *
@@ -15,7 +15,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Display Posts
- * @version 2.8.0
+ * @version 2.9.0
  * @author Bill Erickson <bill@billerickson.net>
  * @copyright Copyright (c) 2011, Bill Erickson
  * @link http://www.billerickson.net/shortcode-to-display-posts/
@@ -40,6 +40,7 @@ function be_display_posts_shortcode( $atts ) {
 		'author'               => '',
 		'category'             => '',
 		'category_display'     => '',
+		'category_id'          => false,
 		'category_label'       => 'Posted in: ',
 		'content_class'        => 'content',
 		'date_format'          => '(n/j/Y)',
@@ -54,6 +55,7 @@ function be_display_posts_shortcode( $atts ) {
 		'excerpt_length'       => false,
 		'excerpt_more'         => false,
 		'excerpt_more_link'    => false,
+		'exclude'              => false,
 		'exclude_current'      => false,
 		'id'                   => false,
 		'ignore_sticky_posts'  => false,
@@ -61,6 +63,7 @@ function be_display_posts_shortcode( $atts ) {
 		'include_author'       => false,
 		'include_content'      => false,
 		'include_date'         => false,
+		'include_date_modified'=> false,
 		'include_excerpt'      => false,
 		'include_link'         => true,
 		'include_title'        => true,
@@ -93,6 +96,7 @@ function be_display_posts_shortcode( $atts ) {
 	$author               = sanitize_text_field( $atts['author'] );
 	$category             = sanitize_text_field( $atts['category'] );
 	$category_display     = 'true' == $atts['category_display'] ? 'category' : sanitize_text_field( $atts['category_display'] );
+	$category_id          = intval( $atts['category_id'] );
 	$category_label       = sanitize_text_field( $atts['category_label'] );
 	$content_class        = array_map( 'sanitize_html_class', ( explode( ' ', $atts['content_class'] ) ) );
 	$date_format          = sanitize_text_field( $atts['date_format'] );
@@ -106,6 +110,7 @@ function be_display_posts_shortcode( $atts ) {
 	$excerpt_length       = intval( $atts['excerpt_length'] );
 	$excerpt_more         = sanitize_text_field( $atts['excerpt_more'] );
 	$excerpt_more_link    = filter_var( $atts['excerpt_more_link'], FILTER_VALIDATE_BOOLEAN );
+	$exclude              = $atts['exclude']; // Sanitized later as an array of integers
 	$exclude_current      = filter_var( $atts['exclude_current'], FILTER_VALIDATE_BOOLEAN );
 	$id                   = $atts['id']; // Sanitized later as an array of integers
 	$ignore_sticky_posts  = filter_var( $atts['ignore_sticky_posts'], FILTER_VALIDATE_BOOLEAN );
@@ -114,6 +119,7 @@ function be_display_posts_shortcode( $atts ) {
 	$include_author       = filter_var( $atts['include_author'], FILTER_VALIDATE_BOOLEAN );
 	$include_content      = filter_var( $atts['include_content'], FILTER_VALIDATE_BOOLEAN );
 	$include_date         = filter_var( $atts['include_date'], FILTER_VALIDATE_BOOLEAN );
+	$include_date_modified= filter_var( $atts['include_date_modified'], FILTER_VALIDATE_BOOLEAN );
 	$include_excerpt      = filter_var( $atts['include_excerpt'], FILTER_VALIDATE_BOOLEAN );
 	$include_link         = filter_var( $atts['include_link'], FILTER_VALIDATE_BOOLEAN );
 	$meta_key             = sanitize_text_field( $atts['meta_key'] );
@@ -144,9 +150,11 @@ function be_display_posts_shortcode( $atts ) {
 
 	// Set up initial query for post
 	$args = array(
+		'cat'                 => $category_id,
 		'category_name'       => $category,
 		'order'               => $order,
 		'orderby'             => $orderby,
+		'perm'                => 'readable',
 		'post_type'           => explode( ',', $post_type ),
 		'posts_per_page'      => $posts_per_page,
 		'tag'                 => $tag,
@@ -250,9 +258,17 @@ function be_display_posts_shortcode( $atts ) {
 		$args['post__in'] = $posts_in;
 	}
 
-	// If Exclude Current
-	if( is_singular() && $exclude_current )
-		$args['post__not_in'] = array( get_the_ID() );
+	// If Exclude
+	$post__not_in = array();
+	if( !empty( $exclude ) ) {
+		$post__not_in = array_map( 'intval', explode( ',', $exclude ) );
+	}
+	if( is_singular() && $exclude_current ) {
+		$post__not_in[] = get_the_ID();
+	}
+	if( !empty( $post__not_in ) ) {
+		$args['post__not_in'] = $post__not_in;
+	}
 
 	// Post Author
 	if( !empty( $author ) ) {
@@ -408,8 +424,11 @@ function be_display_posts_shortcode( $atts ) {
 
 		}
 
-		if ( $include_date )
+		if ( $include_date ) {
 			$date = ' <span class="date">' . get_the_date( $date_format ) . '</span>';
+		} elseif ( $include_date_modified ) {
+			$date = ' <span class="date">' . get_the_modified_date( $date_format ) . '</span>';
+		}
 
 		if( $include_author )
 			/**
@@ -530,7 +549,7 @@ function be_display_posts_shortcode( $atts ) {
 	 */
 	$close = apply_filters( 'display_posts_shortcode_wrapper_close', '</' . $wrapper . '>', $original_atts );
 
-	$return = $open;
+	$return = '';
 
 	if( $shortcode_title ) {
 
@@ -547,7 +566,7 @@ function be_display_posts_shortcode( $atts ) {
 		$return .= '<' . $title_tag . ' class="display-posts-title">' . $shortcode_title . '</' . $title_tag . '>' . "\n";
 	}
 
-	$return .= $inner . $close;
+	$return .= $open . $inner . $close;
 
 	return $return;
 }

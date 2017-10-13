@@ -85,15 +85,15 @@ if ( $import ) {
 $tabs = array(
 	'wpseo-import' => array(
 		'label'                => __( 'Import settings', 'wordpress-seo' ),
-		'screencast_video_url' => 'https://yoa.st/screencast-tools-import-export',
+		'screencast_video_url' => WPSEO_Shortlinker::get( 'https://yoa.st/screencast-tools-import-export' ),
 	),
 	'wpseo-export' => array(
 		'label'                => __( 'Export settings', 'wordpress-seo' ),
-		'screencast_video_url' => 'https://yoa.st/screencast-tools-import-export',
+		'screencast_video_url' => WPSEO_Shortlinker::get( 'https://yoa.st/screencast-tools-import-export' ),
 	),
 	'import-seo'   => array(
 		'label'                => __( 'Import from other SEO plugins', 'wordpress-seo' ),
-		'screencast_video_url' => 'https://yoa.st/screencast-tools-import-export',
+		'screencast_video_url' => WPSEO_Shortlinker::get( 'https://yoa.st/screencast-tools-import-export' ),
 	),
 );
 
@@ -114,22 +114,27 @@ $tabs = array(
 	</h2>
 
 <?php
+
+$helpcenter_tabs = new WPSEO_Option_Tabs( '', '' );
+
 foreach ( $tabs as $identifier => $tab ) {
-
-	printf( '<div id="%s" class="wpseotab">', $identifier );
-
 	if ( ! empty( $tab['screencast_video_url'] ) ) {
 		$tab_video_url = $tab['screencast_video_url'];
 
 		$helpcenter_tab = new WPSEO_Option_Tab( $identifier, $tab['label'],
 			array( 'video_url' => $tab['screencast_video_url'] ) );
-
-		$helpcenter = new WPSEO_Help_Center( $identifier, $helpcenter_tab );
-		$helpcenter->output_help_center();
 	}
 
-	require_once WPSEO_PATH . 'admin/views/tabs/tool/' . $identifier . '.php';
+	$helpcenter_tabs->add_tab( $helpcenter_tab );
+}
 
+$helpcenter = new WPSEO_Help_Center( '', $helpcenter_tabs );
+$helpcenter->localize_data();
+$helpcenter->mount();
+
+foreach ( $tabs as $identifier => $tab ) {
+	printf( '<div id="%s" class="wpseotab">', $identifier );
+	require_once WPSEO_PATH . 'admin/views/tabs/tool/' . $identifier . '.php';
 	echo '</div>';
 }
 

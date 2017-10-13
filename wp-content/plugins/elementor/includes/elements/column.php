@@ -1,7 +1,9 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 class Element_Column extends Element_Base {
 
@@ -21,7 +23,7 @@ class Element_Column extends Element_Base {
 			],
 			'remove' => [
 				'title' => sprintf( __( 'Remove %s', 'elementor' ), $column_label ),
-				'icon' => 'times',
+				'icon' => 'close',
 			],
 		];
 	}
@@ -35,11 +37,11 @@ class Element_Column extends Element_Base {
 	}
 
 	public function get_icon() {
-		return 'eicon-columns';
+		return 'eicon-column';
 	}
 
 	protected function _register_controls() {
-		// Section Layout
+		// Section Layout.
 		$this->start_controls_section(
 			'layout',
 			[
@@ -104,7 +106,7 @@ class Element_Column extends Element_Base {
 				'type' => Controls_Manager::NUMBER,
 				'placeholder' => 20,
 				'selectors' => [
-					'{{WRAPPER}} > .elementor-column-wrap > .elementor-widget-wrap > .elementor-widget' => 'margin-bottom: {{VALUE}}px',
+					'{{WRAPPER}} > .elementor-column-wrap > .elementor-widget-wrap > .elementor-widget:not(:last-child)' => 'margin-bottom: {{VALUE}}px',//Need the full path for exclude the inner section
 				],
 			]
 		);
@@ -116,7 +118,9 @@ class Element_Column extends Element_Base {
 			'nav',
 		];
 
-		$options = [ '' => __( 'Default', 'elementor' ) ] + array_combine( $possible_tags, $possible_tags );
+		$options = [
+			'' => __( 'Default', 'elementor' ),
+		] + array_combine( $possible_tags, $possible_tags );
 
 		$this->add_control(
 			'html_tag',
@@ -195,14 +199,14 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Column Background Overlay
+		// Section Column Background Overlay.
 		$this->start_controls_section(
 			'section_background_overlay',
 			[
 				'label' => __( 'Background Overlay', 'elementor' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 				'condition' => [
-					'background_background' => [ 'classic', 'gradient', 'video' ],
+					'background_background' => [ 'classic', 'gradient' ],
 				],
 			]
 		);
@@ -221,9 +225,6 @@ class Element_Column extends Element_Base {
 			[
 				'name' => 'background_overlay',
 				'selector' => '{{WRAPPER}} > .elementor-element-populated >  .elementor-background-overlay',
-				'condition' => [
-					'background_background' => [ 'classic', 'gradient' ],
-				],
 			]
 		);
 
@@ -423,7 +424,7 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Typography
+		// Section Typography.
 		$this->start_controls_section(
 			'section_typo',
 			[
@@ -520,7 +521,7 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Advanced
+		// Section Advanced.
 		$this->start_controls_section(
 			'section_advanced',
 			[
@@ -704,11 +705,11 @@ class Element_Column extends Element_Base {
 		?>
 		<div class="elementor-element-overlay">
 			<ul class="elementor-editor-element-settings elementor-editor-column-settings">
-				<li class="elementor-editor-element-setting elementor-editor-element-trigger" title="<?php printf( __( 'Edit %s', 'elementor' ), __( 'Column', 'elementor' ) ); ?>"><i class="fa fa-columns"></i></li>
+				<li class="elementor-editor-element-setting elementor-editor-element-trigger" title="<?php printf( __( 'Edit %s', 'elementor' ), __( 'Column', 'elementor' ) ); ?>"><i class="eicon-column"></i></li>
 				<?php foreach ( self::get_edit_tools() as $edit_tool_name => $edit_tool ) : ?>
 					<li class="elementor-editor-element-setting elementor-editor-element-<?php echo $edit_tool_name; ?>" title="<?php echo $edit_tool['title']; ?>">
 						<span class="elementor-screen-only"><?php echo $edit_tool['title']; ?></span>
-						<i class="fa fa-<?php echo $edit_tool['icon']; ?>"></i>
+						<i class="eicon-<?php echo $edit_tool['icon']; ?>"></i>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -730,10 +731,15 @@ class Element_Column extends Element_Base {
 		$settings = $this->get_settings();
 
 		$has_background_overlay = in_array( $settings['background_overlay_background'], [ 'classic', 'gradient' ] ) ||
-		                          in_array( $settings['background_overlay_hover_background'], [ 'classic', 'gradient' ] );
+								  in_array( $settings['background_overlay_hover_background'], [ 'classic', 'gradient' ] );
+
+		$column_wrap_class = 'elementor-column-wrap';
+		if ( $this->get_children() ) {
+			$column_wrap_class .= ' elementor-element-populated';
+		}
 		?>
-		<<?php echo $this->get_html_tag() . ' ' .  $this->get_render_attribute_string( '_wrapper' ); ?>>
-			<div class="elementor-column-wrap<?php if ( $this->get_children() ) echo ' elementor-element-populated'; ?>">
+		<<?php echo $this->get_html_tag() . ' ' . $this->get_render_attribute_string( '_wrapper' ); ?>>
+			<div class="<?php echo $column_wrap_class; ?>">
 			<?php if ( $has_background_overlay ) : ?>
 				<div class="elementor-background-overlay"></div>
 			<?php endif; ?>
@@ -758,11 +764,13 @@ class Element_Column extends Element_Base {
 
 		$settings = $this->get_settings();
 
-		$this->add_render_attribute( '_wrapper', 'class', [
-			'elementor-column',
-			'elementor-col-' . $settings['_column_size'],
-			'elementor-' . $column_type . '-column',
-		] );
+		$this->add_render_attribute(
+			'_wrapper', 'class', [
+				'elementor-column',
+				'elementor-col-' . $settings['_column_size'],
+				'elementor-' . $column_type . '-column',
+			]
+		);
 
 		$this->add_render_attribute( '_wrapper', 'data-element_type', $this->get_name() );
 	}

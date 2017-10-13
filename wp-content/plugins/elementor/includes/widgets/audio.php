@@ -1,27 +1,77 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Audio Widget
+ */
 class Widget_Audio extends Widget_Base {
+
+	/**
+	 * Current instance.
+	 *
+	 * @access protected
+	 *
+	 * @var array
+	 */
 	protected $_current_instance = [];
 
+	/**
+	 * Retrieve audio widget name.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'audio';
 	}
 
+	/**
+	 * Retrieve audio widget title.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'SoundCloud', 'elementor' );
 	}
 
+	/**
+	 * Retrieve audio widget icon.
+	 *
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-headphones';
 	}
 
+	/**
+	 * Retrieve the list of categories the audio widget belongs to.
+	 *
+	 * Used to determine where to display the widget in the editor.
+	 *
+	 * @access public
+	 *
+	 * @return array Widget categories.
+	 */
 	public function get_categories() {
 		return [ 'general-elements' ];
 	}
 
+	/**
+	 * Register audio widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_audio',
@@ -69,8 +119,6 @@ class Widget_Audio extends Widget_Base {
 			[
 				'label' => __( 'Autoplay', 'elementor' ),
 				'type' => Controls_Manager::SWITCHER,
-				'label_off' => __( 'No', 'elementor' ),
-				'label_on' => __( 'Yes', 'elementor' ),
 			]
 		);
 
@@ -172,11 +220,19 @@ class Widget_Audio extends Widget_Base {
 
 	}
 
+	/**
+	 * Render audio widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access protected
+	 */
 	protected function render() {
 		$settings = $this->get_settings();
 
-		if ( empty( $settings['link'] ) )
+		if ( empty( $settings['link'] ) ) {
 			return;
+		}
 
 		$this->_current_instance = $settings;
 
@@ -188,9 +244,19 @@ class Widget_Audio extends Widget_Base {
 			<div class="elementor-soundcloud-wrapper">
 				<?php echo $video_html; ?>
 			</div>
-		<?php endif;
+		<?php
+		endif;
 	}
 
+	/**
+	 * Filter audio widget oEmbed results.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @access public
+	 *
+	 * @param string $html The HTML returned by the oEmbed provider.
+	 */
 	public function filter_oembed_result( $html ) {
 		$param_keys = [
 			'auto_play',
@@ -226,5 +292,12 @@ class Widget_Audio extends Widget_Base {
 		return $html;
 	}
 
+	/**
+	 * Render audio widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @access protected
+	 */
 	protected function _content_template() {}
 }
